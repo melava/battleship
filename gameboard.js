@@ -35,29 +35,34 @@ const GameBoardFactory = () => {
         // console.log(board)
     }
 
-    function receiveAttack(coord) {
-        let attackedSpot = board.find(element => element.slot === coord);
+    function receiveAttack(coord, playerBoard) {
+        let attackedSpot = playerBoard.board.find(element => element.slot === coord);
+        if (attackedSpot.hit === true) {
+            throw new Error('illegal move! This slot was already shot')
+        }
         attackedSpot.hit = true;
         // console.log(attackedSpot)
         if (attackedSpot.occupied) {
-            checkIfLost(this);
+            // console.log('hit!')
+            checkIfLost(playerBoard);
             return attackedSpot.occupied;
         } else {
+            // console.log('missed!')
             this.missedHit.push(coord);
-            return this.missedHit
+            return attackedSpot.occupied
         } 
     }
 
-    function checkIfLost(thisBoard) {
-        let allOccupiedSlots = board.filter(element => element.occupied)
+    function checkIfLost(playerBoard) {
+        let allOccupiedSlots = playerBoard.board.filter(element => element.occupied)
         // console.log(allOccupiedSlots)
         let sunkShips = allOccupiedSlots.filter(element => element.hit)
         // console.log(sunkShips)
         if (allOccupiedSlots.length === sunkShips.length) {
             // console.log('You lost! All your ships are sunk.');
-            thisBoard.allSunk = true
+            playerBoard.allSunk = true
         }
-        return thisBoard.allSunk
+        return playerBoard.allSunk
 
     }
 
